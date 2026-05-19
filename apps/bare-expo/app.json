@@ -50,7 +50,12 @@
     },
     "plugins": [
       "expo-router",
-      "expo-video",
+      [
+        "expo-video",
+        {
+          "supportsInteractiveMediaAds": true
+        }
+      ],
       "expo-background-fetch",
       [
         "expo-app-intents",
