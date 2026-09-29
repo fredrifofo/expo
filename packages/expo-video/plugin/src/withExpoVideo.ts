@@ -1,5 +1,3 @@
-import { updateAndroidBuildProperty } from '@expo/config-plugins/build/android/BuildProperties';
-import { withPermissions } from '@expo/config-plugins/build/android/Permissions';
 import {
   AndroidConfig,
   type ConfigPlugin,
@@ -29,7 +27,7 @@ const withExpoVideo: ConfigPlugin<WithExpoVideoOptions> = (
     });
 
     withGradleProperties(config, (config) => {
-      config.modResults = updateAndroidBuildProperty(
+      config.modResults = AndroidConfig.BuildProperties.updateAndroidBuildProperty(
         config.modResults,
         'expo.video.useInteractiveMediaAds',
         'true'
@@ -37,7 +35,7 @@ const withExpoVideo: ConfigPlugin<WithExpoVideoOptions> = (
       return config;
     });
 
-    withPermissions(config, ['android.permission.ACCESS_NETWORK_STATE']);
+    AndroidConfig.Permissions.withPermissions(config, ['android.permission.ACCESS_NETWORK_STATE']);
   }
 
   withInfoPlist(config, (config) => {
