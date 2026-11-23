@@ -102,17 +102,8 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
     
   // Refreshes and reattaches the player view with updated layout bounds
   func refreshPlayerViewLayout() {
-      // Temporarily remove the view from the UI to ensure proper re-render
-      playerViewController.view.removeFromSuperview()
-
-      // Set the frame bounds
-      playerViewController.view.frame = bounds
-
-      // Ensure the player controls are re-rendered with the correct bounds
-      playerViewController.endAppearanceTransition()
-
-      // Re-attach the view to the UI
-      addSubview(playerViewController.view)
+    playerViewControllerWrapper.refreshSafeAreaInsets()
+    playerViewControllerWrapper.layoutControllerView()
   }
 
   func startPictureInPicture() throws {
