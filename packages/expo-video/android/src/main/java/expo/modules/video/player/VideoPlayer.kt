@@ -434,8 +434,11 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   }
 
   private fun prepareWithAds() {
-    // It has already been prepared
     if (isReadyToLoad) {
+      // Load a source that was replaced while no view was attached
+      if (uncommittedSource != null) {
+        prepare()
+      }
       return
     }
 
