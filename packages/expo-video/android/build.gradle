@@ -22,6 +22,10 @@ android {
     buildConfigField("boolean", "useInteractiveMediaAds", "${useInteractiveMediaAds}")
   }
 
+  buildFeatures {
+    buildConfig true
+  }
+
   sourceSets {
     main {
       // Conditionally include the IMA specific files in the compiler output
