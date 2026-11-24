@@ -77,6 +77,10 @@ class VideoModule : Module() {
         val applicationContext = appContext.reactContext?.applicationContext ?: throw Exceptions.ReactContextLost()
         val player = VideoPlayer(applicationContext, appContext, source, playerBuilderOptions)
         appContext.mainQueue.launch {
+          // Attaching to a view may have already prepared the source, and preparing again without one clears the player
+          if (player.uncommittedSource == null) {
+            return@launch
+          }
           player.prepare()
         }
         return@Constructor player
@@ -85,6 +89,13 @@ class VideoModule : Module() {
       Property("playing")
         .get { ref: VideoPlayer ->
           ref.playing
+        }
+
+      Property("playingAd")
+        .get { ref: VideoPlayer ->
+          runBlocking(appContext.mainQueue.coroutineContext) {
+            ref.player.isPlayingAd
+          }
         }
 
       Property("muted")
@@ -110,7 +121,7 @@ class VideoModule : Module() {
           //  so we can't update the currentTime in a non-blocking way like the other properties.
           //  Until we think of something better we can temporarily do it this way
           runBlocking(appContext.mainQueue.coroutineContext) {
-            ref.player.currentPosition / 1000f
+            ref.player.contentPosition / 1000f
           }
         }
         .set { ref: VideoPlayer, currentTime: Double ->
@@ -336,7 +347,7 @@ class VideoModule : Module() {
 
       Function("seekBy") { ref: VideoPlayer, seekTime: Double ->
         appContext.mainQueue.launch {
-          val seekPos = ref.player.currentPosition + (seekTime * 1000).toLong()
+          val seekPos = ref.player.contentPosition + (seekTime * 1000).toLong()
           ref.player.seekTo(seekPos)
         }
       }

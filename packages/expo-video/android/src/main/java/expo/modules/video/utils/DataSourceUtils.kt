@@ -10,7 +10,6 @@ import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
-import androidx.media3.exoplayer.source.MediaSource
 import expo.modules.video.cache.CachePolicy
 import expo.modules.video.cache.CacheVariantIndex
 import expo.modules.video.cache.ExpoVideoCacheKeyFactory
@@ -178,7 +177,7 @@ fun buildMediaSourceFactory(
   context: Context,
   dataSourceFactory: DataSource.Factory,
   fallbackOnTransportError: Boolean = false
-): MediaSource.Factory {
+): DefaultMediaSourceFactory {
   val factory = DefaultMediaSourceFactory(context).setDataSourceFactory(dataSourceFactory)
   if (fallbackOnTransportError) {
     factory.setLoadErrorHandlingPolicy(TransportFallbackLoadErrorHandlingPolicy())
@@ -190,7 +189,7 @@ fun buildMediaSourceFactory(
 fun buildExpoVideoMediaSource(
   context: Context,
   videoSource: VideoSource
-): MediaSource {
+): DefaultMediaSourceFactory {
   val dataSourceFactory = if (videoSource.useCaching) {
     buildCacheDataSourceFactory(context, videoSource)
   } else {
@@ -198,13 +197,11 @@ fun buildExpoVideoMediaSource(
   }
   // With caching on, some renditions may be servable from the cache while the network is gone.
   // Let a rendition that cannot be reached fall back to another one instead of failing playback.
-  val mediaSourceFactory = buildMediaSourceFactory(
+  return buildMediaSourceFactory(
     context,
     dataSourceFactory,
     fallbackOnTransportError = videoSource.useCaching
   )
-  val mediaItem = videoSource.toMediaItem(context)
-  return mediaSourceFactory.createMediaSource(mediaItem)
 }
 
 private fun getApplicationName(context: Context): String {
