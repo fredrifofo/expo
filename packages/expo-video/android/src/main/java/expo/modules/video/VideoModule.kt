@@ -77,6 +77,10 @@ class VideoModule : Module() {
         val applicationContext = appContext.reactContext?.applicationContext ?: throw Exceptions.ReactContextLost()
         val player = VideoPlayer(applicationContext, appContext, source, playerBuilderOptions)
         appContext.mainQueue.launch {
+          // Attaching to a view may have already prepared the source, and preparing again without one clears the player
+          if (player.uncommittedSource == null) {
+            return@launch
+          }
           player.prepare()
         }
         return@Constructor player
