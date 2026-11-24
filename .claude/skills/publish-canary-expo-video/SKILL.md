@@ -1,11 +1,13 @@
 ---
 name: publish-canary-expo-video
-description: WIP. Publish a canary build of our patched expo-video (`@fredrifoversant/expo-video`) from a `release/mobile-<x-y-z>` branch and tag the published commit. Use when asked to publish, release, or ship the expo-video canary. Run release-synced-expo-video first.
+description: Publish a canary build of our patched expo-video (`@fredrifoversant/expo-video`) from a `release/mobile-<x-y-z>` branch and tag the published commit. Use when asked to release, publish, or ship expo-video, or to "run the release skill". A release is always a canary. Run release-synced-expo-video first only when the user asks to sync to a new upstream version.
 ---
 
-# Publish a canary expo-video (WIP)
+# Publish a canary expo-video
 
-Publish `release/mobile-<x-y-z>` after `release-synced-expo-video` is done. Steps are not verified yet.
+A "release" of our expo-video is always a canary. There is no other release type. When the user says "run the release skill", use this skill, not `release-synced-expo-video`.
+
+Publish `release/mobile-<x-y-z>` after `release-synced-expo-video` is done.
 
 Start from a clean checkout of `release/mobile-<x-y-z>`. The bare-app test (sync skill, step 9) must have passed.
 

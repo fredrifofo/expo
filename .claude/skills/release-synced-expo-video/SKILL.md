@@ -1,11 +1,9 @@
 ---
 name: release-synced-expo-video
-description: WIP. Rebase our expo-video patches onto the latest stable upstream expo-video from npm and open a draft PR. Use when asked to sync or upgrade our expo-video fork to a new upstream version. Publishing is in publish-canary-expo-video.
+description: Rebase our expo-video patches onto the latest stable upstream expo-video from npm and open a draft PR. Use only when asked to sync or upgrade our expo-video fork to a new upstream version. Do not use it for a plain "release" request: a release is always a canary, in publish-canary-expo-video.
 ---
 
-# Sync expo-video with upstream (WIP)
-
-Steps 1-7 are verified (done for 58-0-14). Step 8 is not done yet.
+# Sync expo-video with upstream
 
 - `origin` is our fork, `upstream` is `expo/expo`.
 - `remote/<x-y-z>` is a clean mirror of upstream at the commit that published `expo-video@<x.y.z>`. Never commit to it.
