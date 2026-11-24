@@ -57,7 +57,7 @@ description: Rebase our expo-video patches onto the latest stable upstream expo-
    ```
    Body headings: `Why`, `How`, `Test Plan`, `Screenshots`, `Checklist`. List each conflict and how it was resolved. Write the body to a temp file. End it with the Claude Code attribution line.
 
-   **The PR commit list shows every patch, not only the new ones.** The base is the upstream mirror, so GitHub lists all our patches again, and they have new hashes after each rebase. Do not rely on the commit list. After the first published canary, compare against the previous release tag instead of a branch: `git range-diff remote/<previous-x-y-z>..fork/expo-video@<previous-version> remote/<x-y-z>..release/mobile-<x-y-z>`. `<previous-version>` is the full canary version. Under `How`, add a `New patches since <previous>` list and a `Carried over` list from `git range-diff`:
+   **The PR commit list shows every patch, not only the new ones.** The base is the upstream mirror, so GitHub lists all our patches again, and they have new hashes after each rebase. Do not rely on the commit list. After the first published canary, compare against the previous release tag instead of a branch: `git range-diff remote/<previous-x-y-z>..release/mobile-<previous-x-y-z>-canary-<YYYYMMDD>-<hash> remote/<x-y-z>..release/mobile-<x-y-z>`. Find the tag with `git tag --list 'release/*-canary-*'`. Under `How`, add a `New patches since <previous>` list and a `Carried over` list from `git range-diff`:
    ```sh
    git range-diff remote/<previous-x-y-z>..release/mobile-<previous> \
                   remote/<x-y-z>..release/mobile-<x-y-z>

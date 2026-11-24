@@ -39,9 +39,9 @@ Start from a clean checkout of `release/mobile-<x-y-z>`. The bare-app test (sync
 
 5. **Tag the published commit.** Do this right after publishing, while `HEAD` is still the commit the canary hash came from. Use the exact published version in the tag name:
    ```sh
-   git tag fork/expo-video@<x.y.z>-canary-<YYYYMMDD>-<hash> <hash>
+   git tag release/mobile-<x-y-z>-canary-<YYYYMMDD>-<hash> <hash>
    ```
-   The `package.json` edit from step 2 is never committed, so this tag is the only record of what was published. `fork/` keeps it apart from upstream's `expo-video@<x.y.z>` tags. List releases with `git tag --list 'fork/*'`.
+   The `package.json` edit from step 2 is never committed, so this tag is the only record of what was published. The name starts with the release branch name, so the tag sorts next to its branch. List releases with `git tag --list 'release/*-canary-*'`.
    The next sync compares against this tag. See step 6 of `release-synced-expo-video`.
 
 6. **Revert the working tree.** `git checkout packages/expo-video/package.json`.
