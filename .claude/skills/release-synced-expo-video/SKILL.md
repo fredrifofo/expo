@@ -1,11 +1,11 @@
 ---
 name: release-synced-expo-video
-description: WIP. Release an upgraded expo-video with our patches on top of the latest stable upstream expo-video from npm. Use when asked to sync or upgrade our expo-video fork to a new upstream version.
+description: WIP. Rebase our expo-video patches onto the latest stable upstream expo-video from npm and open a draft PR. Use when asked to sync or upgrade our expo-video fork to a new upstream version. Publishing is in publish-canary-expo-video.
 ---
 
-# Release a synced expo-video (WIP)
+# Sync expo-video with upstream (WIP)
 
-Steps 1-7 are verified (done for 58-0-14). Steps 8+ are not done yet.
+Steps 1-7 are verified (done for 58-0-14). Step 8 is not done yet.
 
 - `origin` is our fork, `upstream` is `expo/expo`.
 - `remote/<x-y-z>` is a clean mirror of upstream at the commit that published `expo-video@<x.y.z>`. Never commit to it.
@@ -59,7 +59,7 @@ Steps 1-7 are verified (done for 58-0-14). Steps 8+ are not done yet.
    ```
    Body headings: `Why`, `How`, `Test Plan`, `Screenshots`, `Checklist`. List each conflict and how it was resolved. Write the body to a temp file. End it with the Claude Code attribution line.
 
-   **The PR commit list shows every patch, not only the new ones.** The base is the upstream mirror, so GitHub lists all our patches again, and they have new hashes after each rebase. Do not rely on the commit list. Under `How`, add a `New patches since <previous>` list and a `Carried over` list from `git range-diff`:
+   **The PR commit list shows every patch, not only the new ones.** The base is the upstream mirror, so GitHub lists all our patches again, and they have new hashes after each rebase. Do not rely on the commit list. After the first published canary, compare against the previous release tag instead of a branch: `git range-diff remote/<previous-x-y-z>..fork/expo-video@<previous-version> remote/<x-y-z>..release/mobile-<x-y-z>`. `<previous-version>` is the full canary version. Under `How`, add a `New patches since <previous>` list and a `Carried over` list from `git range-diff`:
    ```sh
    git range-diff remote/<previous-x-y-z>..release/mobile-<previous> \
                   remote/<x-y-z>..release/mobile-<x-y-z>
@@ -76,29 +76,8 @@ Steps 1-7 are verified (done for 58-0-14). Steps 8+ are not done yet.
    - Android `VideoPlayer.kt`: upstream-added code that calls `prepare()` or `replace` must still reach our `prepareWithAds` path.
    - Callers of `buildMediaSourceFactory` and `toMediaSource` match our `DefaultMediaSourceFactory` return type.
 
-8. **TODO: build and check.** Run `pnpm build` in `packages/expo-video` and `et check-packages expo-video`. Never hand-edit or stage `build/`.
+8. **Prompt the user to test the bare app. Stop here until they answer.** Ask: "Should I test the bare app (`apps/bare-expo`) with IMA on, or will you test it?" Do not publish without an answer. The test needs `expo.video.useInteractiveMediaAds=true`, and iOS needs `pod install` in `apps/bare-expo/ios`. Use the `run-bare-expo` skill (untracked in `.claude/skills/`, restored from the stash "Expo bare app builds and release"). That skill says pnpm 10. This repo needs pnpm `^12.2.1`, so ignore the pnpm 10 advice. Mark the PR ready after the test passes.
 
-9. **Prompt the user to test the bare app. Stop here until they answer.** Ask: "Should I test the bare app (`apps/bare-expo`) with IMA on, or will you test it?" Do not continue to step 10 without an answer. The test needs `expo.video.useInteractiveMediaAds=true`, and iOS needs `pod install` in `apps/bare-expo/ios`. Use the `run-bare-expo` skill (untracked in `.claude/skills/`, restored from the stash "Expo bare app builds and release"). That skill says pnpm 10. This repo needs pnpm `^12.2.1`, so ignore the pnpm 10 advice. Mark the PR ready after the test passes.
-
-10. **Set the canary name and version. Never commit this.** Edit `packages/expo-video/package.json` in the working tree only:
-   - `name`: `@fredrifoversant/expo-video`
-   - `version`: `<x.y.z>-canary-<YYYYMMDD>-<7-char hash>`, for example `58.0.14-canary-20261123-adc2725`. `x.y.z` comes from the branch name. The hash is `git rev-parse --short=7 HEAD`. Take the hash after the last commit, because the package.json edit is never committed.
-   Do not stage this file. Revert it with `git checkout packages/expo-video/package.json` after publishing.
-
-11. **TODO: publish.** The user runs it:
-   ```sh
-   cd packages/expo-video
-   npm login
-   npm publish --access public --tag canary --ignore-scripts
-   ```
-   `--ignore-scripts` is required for 58+. Upstream's `prepack` fails on `publishPrebuilds: true` (no xcframework), and it would stage prebuilt artifacts that skip our IMA code. Run `pnpm build` yourself first. Check the tarball with `npm pack --dry-run --ignore-scripts --json`. It must have no `local-maven-repo/` or `prebuilds/` paths.
-   `build/` must be fresh first (step 8). If `pnpm build` says `expo-build` is missing, `node_modules` is stale from an older SDK. The repo needs pnpm `^12.2.1` (`volta install pnpm@12`). Then run `pnpm install --frozen-lockfile` at the repo root to relink `@expo/internal-scripts`.
-
-11. **Tag the published commit.** Do this right after publishing, while `HEAD` is still the commit the canary hash came from. Use the exact published version in the tag name:
-   ```sh
-   git tag fork/expo-video@<x.y.z>-canary-<YYYYMMDD>-<hash> <hash>
-   ```
-   The `package.json` edit from step 9 is never committed, so this tag is the only record of what was published. `fork/` keeps it apart from upstream's `expo-video@<x.y.z>` tags. List releases with `git tag --list 'fork/*'`.
-   For the next release, compare against the previous tag instead of a branch in step 6: `git range-diff remote/<previous-x-y-z>..fork/expo-video@<previous-version> remote/<x-y-z>..release/mobile-<x-y-z>`. The `<previous-version>` is the full canary version. Ask the user before `git push origin --tags`.
+Build, the canary name and version in `package.json`, publish, and tagging are in the `publish-canary-expo-video` skill. Use it after the PR is ready.
 
 Confirm with the user before any `git push`.
